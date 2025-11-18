@@ -24,3 +24,4 @@ class TestAccount:
     def test_no_ammount_added(self):
         account5 = Account("Marcin","Martychewicz",50,70031618343,"PROM_CDA")
         assert account5.promo_code.startswith("PROM_") and account5.balance != 0, "nie naliczono rabatu mimo poprawnego kodu"
+
