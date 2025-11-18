@@ -14,12 +14,12 @@ class TestAccount:
         assert len(str(account2.pesel)) == 11, "nieprawidlowa dlugosc peselu"
 
     def test_empty_code(self):
-        account3 = Account("Wojtek", "Nowak", 50,12345678901)
+        account3 = Account("Wojtek", "Nowak", 0,12345678901)
         assert account3.balance ==0, "naliczono rabat mimo nie podania kodu"
 
     def test_wrong_code(self):
-        account4 = Account("Franek","Czeczotka",50,11342547342,"kod_promocyjny_lol")
-        assert account4.promo_code.startswith("PROM_"), "naliczono rabat mimo błędnego kodu"
+        account4 = Account("Franek","Czeczotka",50,11342547342,"test")
+        assert not account4.promo_code.startswith("PROM_") and account4.balance == 50, "naliczono rabat mimo błędnego kodu"
 
     def test_no_ammount_added(self):
         account5 = Account("Marcin","Martychewicz",50,70031618343,"PROM_CDA")
