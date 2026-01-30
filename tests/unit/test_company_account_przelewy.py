@@ -1,36 +1,27 @@
 from src.company_account import C_Account
 
+
 class TestCompanyPrzelewy:
-    def test_money_not_recieved(self):
-        account6 = C_Account("Sony",132547534,100)
-        account7 = C_Account("Microsoft",6483740293,50)
-        saldo = account7.balance
+    def test_transfer_reduces_sender_and_increases_receiver_balance(self):
+        sender = C_Account("FirmaA", 1234567890, 0)
+        receiver = C_Account("FirmaB", 1234567890, 0)
 
-        kwota = 50
+        sender.balance = 100
+        receiver.balance = 50
 
-        account6.przelew_wychodzacy(account7,kwota)
+        sender.przelew_wychodzacy(receiver, 30)
 
-        assert account7.balance == saldo+kwota, "pieniądze nie dotarły na konto"
-    
-    def test_not_enough_money(self):
-        account6 = C_Account("Sony",132547534,100)
-        account7 = C_Account("Microsoft",6483740293,50)
-        
-        kwota = 100
-        
-        assert account6.balance-kwota >= 0, "niewystarczające środki na koncie"
+        assert sender.balance == 70, "nie zabrano pieniędzy z konta firmowego wysyłającego przelew"
+        assert receiver.balance == 80, "pieniądze nie dotarły na konto firmowe odbiorcy"
 
-        account6.przelew_wychodzacy(account7,kwota)
+    def test_transfer_does_not_happen_when_insufficient_funds(self):
+        sender = C_Account("FirmaA", 1234567890, 0)
+        receiver = C_Account("FirmaB", 1234567890, 0)
 
+        sender.balance = 20
+        receiver.balance = 50
 
-    def test_money_taken(self):
-        account6 = C_Account("Sony",132547534,100)
-        account7 = C_Account("Microsoft",6483740293,50)
+        sender.przelew_wychodzacy(receiver, 30)
 
-        kwota = 50
-        saldo = account6.balance
-
-        account6.przelew_wychodzacy(account7,kwota)
-
-        assert not account6.balance == saldo, "nie obciążono konta"
-        assert account6.balance == saldo-kwota, "konto zostało obciążone o złą ilość"
+        assert sender.balance == 20, "zabrano środki z konta firmowego mimo niewystarczającego balansu"
+        assert receiver.balance == 50, "konto firmowe odbiorcy otrzymało przelew mimo braku środków u nadawcy"

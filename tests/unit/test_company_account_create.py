@@ -9,6 +9,6 @@ class TestCompanyAccount:
 
     def test_nip_length(self):
 
-        c_account2 = C_Account("Nintendo",9087654321,0)
+        c_account2 = C_Account("Nintendo",1231,0)
 
-        assert len(str(c_account2.nip)) == 10, "nieprawidłowa długość numeru nip"
+        assert c_account2.nip == "Invalid", "nieprawidłowa długość numeru nip"

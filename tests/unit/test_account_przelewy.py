@@ -2,36 +2,29 @@ from src.account import Account
 
 
 class TestPrzelewy:
-    def test_money_not_recieved(self):
-        account6 = Account("Natalia","Kaczmarska",100,12345678900)
-        account7 = Account("Wojciech","Nowakowski",50,12309876543)
-        saldo = account7.balance
+    def test_transfer_reduces_sender_and_increases_receiver_balance(self):
+        sender = Account("A", "A", 0, 90010112345)
+        receiver = Account("B", "B", 0, 90010112345)
 
-        kwota = 50
+        sender.balance = 100  # ustawiamy stan początkowy
+        receiver.balance = 50
 
-        account6.przelew_wychodzacy(account7,kwota)
+        sender.przelew_wychodzacy(receiver, 30)
 
-        assert account7.balance == saldo+kwota, "pieniądze nie dotarły na konto"
-    
-    def test_not_enough_money(self):
-        account6 = Account("Natalia","Kaczmarska",100,12345678900)
-        account7 = Account("Wojciech","Nowakowski",50,12309876543)
-        
-        kwota = 100
+        assert sender.balance == 70, "nie zabrano pieniędzy z konta osoby wysyłającej przelew"
+        assert receiver.balance == 80, "pieniądze nie dotarły na konto adresata przelewu"
 
-        assert account6.balance - kwota >= 0, "niewystarczające środki na koncie"
+    def test_transfer_does_not_happen_when_insufficient_funds(self):
+        sender = Account("A", "A", 0, 90010112345)
+        receiver = Account("B", "B", 0, 90010112345)
 
-        account6.przelew_wychodzacy(account7,kwota)
+        sender.balance = 20
+        receiver.balance = 50
 
-    def test_money_taken(self):
-        account6 = Account("Natalia","Kaczmarska",100,12345678900)
-        account7 = Account("Wojciech","Nowakowski",50,12309876543)
+        sender.przelew_wychodzacy(receiver, 30)
 
-        kwota = 50
-        saldo = account6.balance
+        assert sender.balance == 20, "zabrano środki z konta mimo niewystarczającego balansu"
+        assert receiver.balance == 50, "otrzymano przelew mimo niewystarczającego balansu na koncie drugiej osoby"
 
-        account6.przelew_wychodzacy(account7,kwota)
 
-        assert not account6.balance == saldo, "nie obciążono konta"
-        assert account6.balance == saldo-kwota, "konto zostało obciążone o złą ilość"
     

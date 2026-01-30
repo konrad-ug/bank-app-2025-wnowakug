@@ -2,38 +2,50 @@ from src.company_account import C_Account
 
 
 class TestPrzelewy:
-    def test_money_not_recieved_express(self):
-        account6 = C_Account("Sony",132547534,100)
-        account7 = C_Account("Microsoft",6483740293,50)
-        saldo = account7.balance
+    def test_express_transfer_company_account_takes_fee(self):
+        sender = C_Account("FirmaA", 1234567890, 0)
+        receiver = C_Account("FirmaB", 1234567890, 0)
 
-        kwota = 50
+        sender.balance = 100
+        receiver.balance = 50
 
-        account6.przelew_wychodzacy_express(account7,kwota)
+        sender.przelew_wychodzacy_express(receiver, 20)
 
-        assert account7.balance == saldo+kwota, "pieniądze nie dotarły na konto"
+        assert sender.balance == 75, "nie pobrano opłaty za przelew ekspresowy"
+        assert receiver.balance == 70, "przelew ekspresowy nie dotarł do adresata"
     
-    def test_not_enough_money(self):
-        account6 = C_Account("Sony",132547534,100)
-        account7 = C_Account("Microsoft",6483740293,50)
-        
-        kwota = 100
+    def test_express_transfer_company_can_go_minus_five(self):
+        sender = C_Account("FirmaA", 1234567890, 0)
+        receiver = C_Account("FirmaB", 1234567890, 0)
 
-        assert account6.balance-kwota-1 >= -1, "niewystarczające środki na koncie"
+        sender.balance = 0
 
-        account6.przelew_wychodzacy_express(account7,kwota)
+        sender.przelew_wychodzacy_express(receiver, 0)
 
-    def test_money_taken(self):
-        account6 = C_Account("Sony",132547534,100)
-        account7 = C_Account("Microsoft",6483740293,50)
+        assert sender.balance == -5, "saldo konta nie obniżyło się do -5 po przelewie ekspresowym na kwotę całego balansu konta"
 
-        kwota = 50
-        saldo = account6.balance
+    def test_express_transfer_company_blocked_below_minus_five(self):
+        sender = C_Account("FirmaA", 1234567890, 0)
+        receiver = C_Account("FirmaB", 1234567890, 0)
 
-        account6.przelew_wychodzacy_express(account7,kwota)
+        sender.balance = 0
 
-        assert not account6.balance == saldo, "nie obciążono konta"
-        assert not account6.balance == saldo-5, "pobrano opłatę za przelew ekspresowy, ale nie obciążono konta"
-        assert not account6.balance == saldo-kwota, "konto zostało obciążone, ale nie pobrano opłaty za przelew ekspresowy"
-        assert account6.balance == saldo-kwota-5, "konto zostało obciążone o złą ilość"
+        sender.przelew_wychodzacy_express(receiver, 10)
+
+        assert sender.balance == 0
+        assert receiver.balance == 0, "przelew dotarł do adresata mimo niewystarczającego balansu"
+
+    def test_express_transfer_company_does_not_allow_extra_hidden_limit(self):
+        sender = C_Account("FirmaA", 1234567890, 0)
+        receiver = C_Account("FirmaB", 1234567890, 0)
+
+        sender.balance = 1
+
+        sender.przelew_wychodzacy_express(receiver, 1)
+
+        assert sender.balance == 1
+        assert receiver.balance == 0
+
+
+
     

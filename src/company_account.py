@@ -2,29 +2,32 @@ class C_Account:
     def __init__(self,company_name,nip,balance):
         self.company_name = company_name
         self.nip = nip
-        self.balance = balance
+        self.balance = 0
 
         if len(str(self.nip)) != 10:
-            self.nip = "invalid"
+            self.nip = "Invalid"
 
     def przelew_przychodzacy(self,kwota):
         self.balance += kwota
 
-    def przelew_wychodzacy(self,cel,kwota):
+    def przelew_wychodzacy(self, cel, kwota):
         if kwota <= self.balance:
             self.balance -= kwota
-            cel.przelew_przychodzacy(kwota)
-        else:
-            pass
+            cel.balance += kwota
     
     def przelew_przychodzacy_express(self,kwota):
         self.balance += kwota
 
-    def przelew_wychodzacy_express(self,cel,kwota):
-        if kwota <= self.balance:
-            self.balance -= kwota+5
+    def przelew_wychodzacy_express(self, cel, kwota):
+        fee = 5
+        new_balance = self.balance - (kwota + fee)
+
+        if new_balance >= 0:
+            self.balance = new_balance
             cel.przelew_przychodzacy(kwota)
-        else:
-            pass
-    
+        elif self.balance == 0 and new_balance >= -fee:
+            self.balance = new_balance
+            cel.przelew_przychodzacy(kwota)
+
+
 
