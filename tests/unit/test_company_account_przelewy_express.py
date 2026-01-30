@@ -46,6 +46,25 @@ class TestPrzelewy:
         assert sender.balance == 1
         assert receiver.balance == 0
 
+    def test_express_transfer_uses_overdraft_limit(self):
+        account = C_Account("FirmaB", 1234567890, 0)
+        receiver = C_Account("FirmaA", 1234567890, 0)
+
+        account.balance = 0
+        account.przelew_wychodzacy_express(receiver, 0)
+
+        assert account.balance == -5
+
+    def test_company_transfer_blocked_when_insufficient_funds(self):
+        sender = C_Account("FirmaA", 1234567890, 0)
+        receiver = C_Account("FirmaB", 1234567890, 0)
+
+        sender.balance = 10
+        sender.przelew_wychodzacy(receiver, 50)
+
+        assert sender.balance == 10
+        assert receiver.balance == 0
+
 
 
     

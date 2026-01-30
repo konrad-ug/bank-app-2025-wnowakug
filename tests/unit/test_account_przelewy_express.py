@@ -35,6 +35,16 @@ class TestPrzelewy:
         assert sender.balance == 0
         assert receiver.balance == 0, "przelew dotarł do adresata mimo niewystarczającego balansu"
 
+    def test_express_transfer_uses_overdraft_limit(self):
+        acc = Account("A", "A", 0, 90010112345)
+        receiver = Account("B", "B", 0, 90010112345)
+
+        acc.balance = 0
+        acc.przelew_wychodzacy_express(receiver, 0)
+
+        assert acc.balance == -1
+
+
 
 
     

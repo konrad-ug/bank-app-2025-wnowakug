@@ -28,10 +28,14 @@ class Account:
         self.history.append(kwota)
 
     def przelew_wychodzacy(self, cel, kwota):
+        if cel is self:
+            return
+
         if kwota <= self.balance:
             self.balance -= kwota
             self.history.append(-kwota)
             cel.przelew_przychodzacy(kwota)
+
 
     def przelew_wychodzacy_express(self, cel, kwota):
         fee = 1
@@ -47,3 +51,26 @@ class Account:
             self.history.append(-kwota)
             self.history.append(-fee)
             cel.przelew_przychodzacy(kwota)
+
+    def _has_minimum_transactions(self):
+        return len(self.history) >= 5
+
+    def _last_three_are_incoming(self):
+        return all(x > 0 for x in self.history[-3:])
+
+    def _sum_last_five(self):
+        return sum(self.history[-5:])
+
+    def submit_for_loan(self, amount):
+        if not self._has_minimum_transactions():
+            return False
+
+        if not self._last_three_are_incoming():
+            return False
+
+        if self._sum_last_five() <= amount:
+            return False
+
+        self.balance += amount
+        return True
+

@@ -31,4 +31,9 @@ class TestAccount:
         account7 = Account("Jan", "Stary", 0, 60010112345, "PROM_ABC")  # 1960
         assert account7.balance == 0, "naliczono bonus mimo nieodpowiedniego wieku"
 
+    def test_promo_not_applied_when_pesel_invalid(self):
+        acc = Account("A", "A", 0, 123, "PROM_ABC")
+        assert acc.balance == 0
+
+
 

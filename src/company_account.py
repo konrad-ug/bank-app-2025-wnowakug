@@ -13,10 +13,14 @@ class C_Account:
         self.history.append(kwota)
 
     def przelew_wychodzacy(self, cel, kwota):
+        if cel is self:
+            return
+
         if kwota <= self.balance:
             self.balance -= kwota
             self.history.append(-kwota)
             cel.przelew_przychodzacy(kwota)
+
     
     def przelew_wychodzacy_express(self, cel, kwota):
         fee = 5
