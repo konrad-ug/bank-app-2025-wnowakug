@@ -1,10 +1,16 @@
+import pytest
 from src.company_account import C_Account
 
+@pytest.fixture
+def sender():
+    return C_Account("FirmaA", 1234567890, 0)
+
+@pytest.fixture
+def receiver():
+    return C_Account("FirmaB", 1234567890, 0)
 
 class TestCompanyPrzelewy:
-    def test_transfer_reduces_sender_and_increases_receiver_balance(self):
-        sender = C_Account("FirmaA", 1234567890, 0)
-        receiver = C_Account("FirmaB", 1234567890, 0)
+    def test_transfer_reduces_sender_and_increases_receiver_balance(self,sender,receiver):
 
         sender.balance = 100
         receiver.balance = 50
@@ -14,10 +20,7 @@ class TestCompanyPrzelewy:
         assert sender.balance == 70, "nie zabrano pieniędzy z konta firmowego wysyłającego przelew"
         assert receiver.balance == 80, "pieniądze nie dotarły na konto firmowe odbiorcy"
 
-    def test_transfer_does_not_happen_when_insufficient_funds(self):
-        sender = C_Account("FirmaA", 1234567890, 0)
-        receiver = C_Account("FirmaB", 1234567890, 0)
-
+    def test_transfer_does_not_happen_when_insufficient_funds(self,sender,receiver):
         sender.balance = 20
         receiver.balance = 50
 
