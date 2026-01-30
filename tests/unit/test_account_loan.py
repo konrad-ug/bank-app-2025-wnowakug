@@ -44,5 +44,13 @@ class TestLoan:
       assert result is True
       assert acc.balance == 330
 
+   def test_loan_rejected_when_sum_equals_amount(self):
+      acc = Account("A", "A", 0, 90010112345)
+      for _ in range(5):
+         acc.przelew_przychodzacy(10) 
+
+      assert acc.submit_for_loan(50) is False
+
+
 
 
