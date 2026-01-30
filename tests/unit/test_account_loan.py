@@ -1,4 +1,3 @@
-import pytest
 from src.account import Account
 
 
