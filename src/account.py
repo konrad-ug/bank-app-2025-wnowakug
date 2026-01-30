@@ -5,6 +5,7 @@ class Account:
         self.balance = 0
         self.pesel = pesel
         self.promo_code = promo_code
+        self.history = []
 
         if len(str(self.pesel)) != 11:
             self.pesel = "Invalid"
@@ -24,23 +25,25 @@ class Account:
     
     def przelew_przychodzacy(self,kwota):
         self.balance += kwota
+        self.history.append(kwota)
 
     def przelew_wychodzacy(self, cel, kwota):
         if kwota <= self.balance:
             self.balance -= kwota
-            cel.balance += kwota
+            self.history.append(-kwota)
+            cel.przelew_przychodzacy(kwota)
 
-    
-    def przelew_przychodzacy_express(self,kwota):
-        self.balance += kwota
-    
     def przelew_wychodzacy_express(self, cel, kwota):
         fee = 1
         new_balance = self.balance - (kwota + fee)
         
         if new_balance >= 0:
             self.balance = new_balance
+            self.history.append(-kwota)
+            self.history.append(-fee)
             cel.przelew_przychodzacy(kwota)
         elif self.balance == 0 and new_balance >= -fee:
             self.balance = new_balance
+            self.history.append(-kwota)
+            self.history.append(-fee)
             cel.przelew_przychodzacy(kwota)
