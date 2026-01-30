@@ -52,16 +52,25 @@ class Account:
             self.history.append(-fee)
             cel.przelew_przychodzacy(kwota)
 
+    def _has_minimum_transactions(self):
+        return len(self.history) >= 5
+
+    def _last_three_are_incoming(self):
+        return all(x > 0 for x in self.history[-3:])
+
+    def _sum_last_five(self):
+        return sum(self.history[-5:])
+
     def submit_for_loan(self, amount):
-        if len(self.history) < 5:
+        if not self._has_minimum_transactions():
             return False
 
-        last_three = self.history[-3:]
-        if any(x <= 0 for x in last_three):
+        if not self._last_three_are_incoming():
             return False
 
-        if sum(self.history[-5:]) <= amount:
+        if self._sum_last_five() <= amount:
             return False
 
         self.balance += amount
         return True
+
