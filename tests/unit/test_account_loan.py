@@ -51,6 +51,19 @@ class TestLoan:
 
       assert acc.submit_for_loan(50) is False
 
+   def test_loan_rejected_when_last_three_include_outgoing(self):
+      acc = Account("A", "A", 0, 90010112345)
+      other = Account("B", "B", 0, 90010112345)
+
+      acc.przelew_przychodzacy(100)
+      acc.przelew_przychodzacy(100)
+      acc.przelew_wychodzacy(other, 10) 
+      acc.przelew_przychodzacy(50)
+      acc.przelew_przychodzacy(20)
+
+      assert acc.submit_for_loan(50) is False
+
+
 
 
 

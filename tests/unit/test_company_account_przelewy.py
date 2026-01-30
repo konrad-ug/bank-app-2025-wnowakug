@@ -25,3 +25,12 @@ class TestCompanyPrzelewy:
 
         assert sender.balance == 20, "zabrano środki z konta firmowego mimo niewystarczającego balansu"
         assert receiver.balance == 50, "konto firmowe odbiorcy otrzymało przelew mimo braku środków u nadawcy"
+
+    def test_company_transfer_to_self_is_blocked(self):
+        acc = C_Account("FirmaA", 1234567890, 0)
+
+        acc.balance = 100
+        acc.przelew_wychodzacy(acc, 50)
+
+        assert acc.balance == 100
+
