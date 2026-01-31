@@ -43,4 +43,46 @@ class TestCompanyAccount:
         spy.assert_not_called()
 
 
+    def test_company_account_to_dict_returns_correct_structure(self):
+        acc = C_Account("ACME", "1234567890", 0)
+        acc.przelew_przychodzacy(500)
+        acc.przelew_wychodzacy(acc, 0) 
 
+        data = acc.to_dict()
+
+        assert data["company_name"] == "ACME", "Niepoprawna nazwa firmy w to_dict()"
+        assert data["nip"] == "1234567890", "Niepoprawny NIP w to_dict()"
+        assert data["balance"] == 500, "Niepoprawne saldo w to_dict()"
+        assert data["history"] == [500], "Niepoprawna historia w to_dict()"
+
+    def test_check_nip_in_gov_returns_true_when_status_czynny(self, mocker):
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "result": {
+                "subject": {
+                    "statusVat": "Czynny"
+                }
+            }
+        }
+
+        mocker.patch("src.company_account.requests.get", return_value=mock_response)
+
+        acc = C_Account("ACME", "1234567890", 0)
+
+        assert acc.nip == "1234567890", "NIP nie powinien być odrzucony gdy status VAT = Czynny"
+
+
+    def test_check_nip_in_gov_returns_false_when_status_not_czynny(self, mocker):
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "result": {
+                "subject": {
+                    "statusVat": "Zwolniony"
+                }
+            }
+        }
+
+        mocker.patch("src.company_account.requests.get", return_value=mock_response)
+
+        with pytest.raises(ValueError, match="Company not registered"):
+            C_Account("BadCorp", "1234567890", 0)

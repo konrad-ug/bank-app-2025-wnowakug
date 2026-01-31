@@ -36,4 +36,16 @@ class TestAccount:
         assert acc.balance == 0
 
 
+    def test_account_to_dict_returns_correct_structure(self):
+        acc = Account("Jan", "Kowalski", 0, "90010112345")
+        acc.przelew_przychodzacy(100)
+
+        data = acc.to_dict()
+
+        assert data["first_name"] == "Jan", "Niepoprawne first_name w to_dict()"
+        assert data["last_name"] == "Kowalski", "Niepoprawne last_name w to_dict()"
+        assert data["pesel"] == "90010112345", "Niepoprawny pesel w to_dict()"
+        assert data["balance"] == 100, "Niepoprawne saldo w to_dict()"
+        assert data["history"] == [100], "Niepoprawna historia w to_dict()"
+
 

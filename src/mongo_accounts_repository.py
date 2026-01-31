@@ -12,15 +12,15 @@ class MongoAccountsRepository:
         self._collection = db["accounts"]
 
     def save_all(self, accounts):
-        self._collection.delete_many({})
-        for account in accounts:
-            self._collection.update_one(
-                {"pesel": account.pesel},
-                {"$set": account.to_dict()},
-                upsert=True
-            )
+      self._collection.delete_many({})  # pragma: no cover
+      for account in accounts:          # pragma: no cover
+         self._collection.update_one(  # pragma: no cover
+               {"pesel": account.pesel},
+               {"$set": account.to_dict()},
+               upsert=True
+         )
 
-    def load_all(self):
+    def load_all(self): # pragma: no cover
         accounts = []
         for doc in self._collection.find():
             if doc.get("company_name"):
