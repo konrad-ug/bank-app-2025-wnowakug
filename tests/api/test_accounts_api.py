@@ -1,74 +1,93 @@
-import requests
+import pytest
+from app.api import app, registry
 
-BASE_URL = "http://127.0.0.1:5000/api/accounts"
+
+@pytest.fixture(autouse=True)
+def clear_registry():
+    # czyścimy stan między testami
+    registry.accounts.clear()
 
 
-def test_create_account():
-    payload = {
+@pytest.fixture
+def client():
+    app.config["TESTING"] = True
+    with app.test_client() as client:
+        yield client
+
+
+def test_create_account(client):
+    response = client.post("/api/accounts", json={
         "name": "James",
         "surname": "Hetfield",
         "pesel": "89092909825"
-    }
-
-    response = requests.post(BASE_URL, json=payload)
+    })
 
     assert response.status_code == 201, "Nie udało się utworzyć konta"
 
 
+def test_get_all_accounts(client):
+    client.post("/api/accounts", json={
+        "name": "Lars",
+        "surname": "Ulrich",
+        "pesel": "75052612345"
+    })
 
-def test_get_all_accounts():
-   payload = {
-      "name": "Lars",
-      "surname": "Ulrich",
-      "pesel": "75052612345"
-   }
+    response = client.get("/api/accounts")
 
-   requests.post(BASE_URL, json=payload)
-
-   response = requests.get(BASE_URL)
-
-   assert response.status_code == 200, "GET /api/accounts nie zwrócił statusu 200"
-   assert isinstance(response.json(), list), "GET /api/accounts nie zwrócił listy kont"
+    assert response.status_code == 200, "GET /api/accounts nie zwrócił statusu 200"
+    assert isinstance(response.get_json(), list), "GET /api/accounts nie zwrócił listy kont"
 
 
-def test_get_account_by_pesel():
-   pesel = "12345678901"
-   payload = {"name": "A", "surname": "B", "pesel": pesel}
+def test_get_account_by_pesel(client):
+    pesel = "12345678901"
 
-   requests.post(BASE_URL, json=payload)
+    client.post("/api/accounts", json={
+        "name": "A",
+        "surname": "B",
+        "pesel": pesel
+    })
 
-   response = requests.get(f"{BASE_URL}/{pesel}")
+    response = client.get(f"/api/accounts/{pesel}")
+
+    assert response.status_code == 200, "GET /api/accounts/<pesel> nie zwrócił 200"
+    assert response.get_json()["pesel"] == pesel, "Zwrócony PESEL nie zgadza się z oczekiwanym"
 
 
-   assert response.status_code == 200, "GET /api/accounts/<pesel> nie zwrócił 200"
-   assert response.json()["pesel"] == pesel, "Zwrócony PESEL nie zgadza się z oczekiwanym"
+def test_get_account_returns_404_when_not_found(client):
+    response = client.get("/api/accounts/00000000000")
 
-def test_get_account_returns_404_when_not_found():
-   response = requests.get(f"{BASE_URL}/00000000000")
+    assert response.status_code == 404, "API nie zwróciło 404 dla nieistniejącego konta"
 
-   assert response.status_code == 404, "API nie zwróciło 404 dla nieistniejącego konta"
 
-def test_update_account():
-   pesel = "22222222222"
-   requests.post(BASE_URL, json={"name": "Old", "surname": "Name", "pesel": pesel})
+def test_update_account(client):
+    pesel = "22222222222"
 
-   response = requests.patch(f"{BASE_URL}/{pesel}", json={"name": "New"})
+    client.post("/api/accounts", json={
+        "name": "Old",
+        "surname": "Name",
+        "pesel": pesel
+    })
 
-   assert response.status_code == 200, "PATCH nie zwrócił 200 przy aktualizacji konta"
+    response = client.patch(f"/api/accounts/{pesel}", json={"name": "New"})
 
-   check = requests.get(f"{BASE_URL}/{pesel}")
-   assert check.json()["name"] == "New", "Imię konta nie zostało zaktualizowane"
+    assert response.status_code == 200, "PATCH nie zwrócił 200 przy aktualizacji konta"
 
-def test_delete_account():
+    check = client.get(f"/api/accounts/{pesel}")
+    assert check.get_json()["name"] == "New", "Imię konta nie zostało zaktualizowane"
+
+
+def test_delete_account(client):
     pesel = "33333333333"
-    requests.post(BASE_URL, json={"name": "X", "surname": "Y", "pesel": pesel})
 
-    response = requests.delete(f"{BASE_URL}/{pesel}")
+    client.post("/api/accounts", json={
+        "name": "X",
+        "surname": "Y",
+        "pesel": pesel
+    })
+
+    response = client.delete(f"/api/accounts/{pesel}")
 
     assert response.status_code == 200, "DELETE nie zwrócił 200 przy usuwaniu konta"
 
-    check = requests.get(f"{BASE_URL}/{pesel}")
+    check = client.get(f"/api/accounts/{pesel}")
     assert check.status_code == 404, "Konto nadal istnieje po usunięciu"
-
-
-
