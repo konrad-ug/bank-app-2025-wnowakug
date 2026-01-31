@@ -8,9 +8,10 @@ class AccountRegistry:
 
     def get_by_pesel(self, pesel):
         for acc in self.accounts:
-            if acc.pesel == pesel:
+            if str(acc.pesel) == str(pesel):
                 return acc
         return None
+
 
     def get_all_accounts(self):
         return self.accounts

@@ -4,3 +4,4 @@ coverage
 requests
 pytest-mock
 behave
+pymongo
