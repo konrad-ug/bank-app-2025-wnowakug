@@ -1,5 +1,6 @@
 import pytest
 from app.api import app, registry
+pytestmark = pytest.mark.api
 
 @pytest.fixture(autouse=True)
 def clear_registry():

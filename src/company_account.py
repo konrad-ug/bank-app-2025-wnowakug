@@ -87,5 +87,10 @@ class C_Account:
         return SMTPClient.send(subject, text, email_address)
 
 
-
-
+    def to_dict(self):
+        return {
+            "company_name": self.company_name,
+            "nip": self.nip,
+            "balance": self.balance,
+            "history": self.history
+        }
