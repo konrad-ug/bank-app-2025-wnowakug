@@ -20,11 +20,14 @@ jobs:
       - name: Start mongo
         run: docker compose -f mongo.yml up -d
 
+      - name: Wait for mongo
+        run: sleep 10
+
       - name: Start flask
         run: |
           export FLASK_APP=app/api.py
           export PYTHONPATH=$GITHUB_WORKSPACE
-          flask run --no-reload &
+          flask run --host=0.0.0.0 --port=5000 --no-reload &
 
       - name: Wait for server
         run: sleep 5

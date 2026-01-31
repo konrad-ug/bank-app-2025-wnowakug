@@ -1,8 +1,10 @@
 import requests
 import time
+import pytest
 
 BASE = "http://127.0.0.1:5000"
 BASE_URL = BASE + "/api/accounts"
+pytestmark = pytest.mark.performance
 
 
 def test_create_account_performance():
