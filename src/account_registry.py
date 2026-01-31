@@ -17,3 +17,7 @@ class AccountRegistry:
 
     def count_accounts(self):
         return len(self.accounts)
+    
+    def pesel_exists(self, pesel):
+        return any(str(acc.pesel) == str(pesel) for acc in self.accounts)
+

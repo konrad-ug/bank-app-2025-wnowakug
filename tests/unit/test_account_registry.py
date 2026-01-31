@@ -45,6 +45,15 @@ class TestRegistry:
 
       assert result is None
 
+   def test_registry_detects_duplicate_pesel(self):
+      reg = AccountRegistry()
+      acc = Account("A", "B", 0, "12345678901") 
+
+      reg.add_account(acc)
+
+      assert reg.pesel_exists("12345678901") is True, "Registry nie wykrył istniejącego PESELu"
+
+
 
 
 
