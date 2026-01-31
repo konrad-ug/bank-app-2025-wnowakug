@@ -1,3 +1,8 @@
+import os
+import requests
+from datetime import date
+
+
 class C_Account:
     def __init__(self,company_name,nip,balance):
         self.company_name = company_name
@@ -7,6 +12,10 @@ class C_Account:
 
         if len(str(self.nip)) != 10:
             self.nip = "Invalid"
+            return
+
+        if not self._check_nip_in_gov(self.nip):
+            raise ValueError("Company not registered!!")
 
     def przelew_przychodzacy(self,kwota):
         self.balance += kwota
@@ -51,6 +60,27 @@ class C_Account:
 
         self.balance += amount
         return True
+    
+    def _check_nip_in_gov(self, nip):
+        base_url = os.getenv("BANK_APP_MF_URL", "https://wl-test.mf.gov.pl/")
+        today = date.today().isoformat()
+        url = f"{base_url}api/search/nip/{nip}?date={today}"
+
+        try:
+            response = requests.get(url, timeout=2)
+            data = response.json()
+            print(data)
+
+            return (
+                data.get("result", {})
+                    .get("subject", {})
+                    .get("statusVat") == "Czynny"
+            )
+
+        except Exception:
+            return True
+
+
 
 
 
