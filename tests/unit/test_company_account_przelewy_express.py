@@ -34,7 +34,7 @@ class TestPrzelewy:
 
         sender.przelew_wychodzacy_express(receiver, 10)
 
-        assert sender.balance == 0
+        assert sender.balance == 0, "przelew wysłany mimo niewystarczających środków"
         assert receiver.balance == 0, "przelew dotarł do adresata mimo niewystarczającego balansu"
 
     def test_express_transfer_company_does_not_allow_extra_hidden_limit(self,sender,receiver):
