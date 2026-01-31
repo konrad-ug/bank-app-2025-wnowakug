@@ -28,4 +28,4 @@ jobs:
         run: sleep 5
 
       - name: Run performance tests
-        run: python -m pytest tests/perf
+        run: python -m pytest -m performance tests/perf
