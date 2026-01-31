@@ -1,3 +1,6 @@
+from datetime import date
+from smtp.smtp import SMTPClient
+
 class Account:
     def __init__(self, first_name, last_name,balance,pesel,promo_code = None):
         self.first_name = first_name
@@ -74,3 +77,8 @@ class Account:
         self.balance += amount
         return True
 
+    def send_history_via_email(self, email_address):
+        subject = f"Account Transfer History {date.today()}"
+        text = f"Personal account history: {self.history}"
+
+        return SMTPClient.send(subject, text, email_address)
