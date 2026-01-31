@@ -37,5 +37,22 @@ class C_Account:
             self.history.append(-fee)
             cel.przelew_przychodzacy(kwota)
 
+    def _has_required_balance(self, amount):
+        return self.balance >= 2 * amount
+
+    def _has_zus_payment(self):
+        return -1775 in self.history
+    
+    def take_loan(self, amount):
+        if not self._has_required_balance(amount):
+            return False
+        if not self._has_zus_payment():
+            return False
+
+        self.balance += amount
+        return True
+
+
+
 
 

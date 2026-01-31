@@ -1,3 +1,4 @@
+import pytest
 from src.account import Account
 
 @pytest.fixture
@@ -10,7 +11,7 @@ def receiver():
 
 class TestPrzelewy:
     def test_transfer_reduces_sender_and_increases_receiver_balance(self,sender,receiver):
-        sender.balance = 100  # ustawiamy stan początkowy
+        sender.balance = 100 
         receiver.balance = 50
 
         sender.przelew_wychodzacy(receiver, 30)
